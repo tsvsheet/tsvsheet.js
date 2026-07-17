@@ -1,5 +1,5 @@
 /**
- * The error contract for @uplang/tsvsheet. Two stable codes cover the two
+ * The error contract for @tsvsheet/tsvsheet. Two stable codes cover the two
  * failure surfaces a caller sees: `load` when the WebAssembly engine cannot be
  * fetched or instantiated, and `engine` when a loaded engine rejects a call
  * (a `.tsvt` syntax error, an out-of-range edit). Callers match on `err.code`.

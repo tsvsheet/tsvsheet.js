@@ -1,5 +1,5 @@
 {
-	"name": "@uplang/tsvsheet",
+	"name": "@tsvsheet/tsvsheet",
 	"version": "0.1.0",
 	"description": "tsvsheet — a spreadsheet for plain text; the Go engine embedded as WebAssembly, with a typed API and a <tsv-sheet> web component",
 	"type": "module",

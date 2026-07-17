@@ -1,5 +1,5 @@
 /**
- * Bundles @uplang/tsvsheet for the browser playground: the <tsv-sheet> web
+ * Bundles @tsvsheet/tsvsheet for the browser playground: the <tsv-sheet> web
  * component (which pulls in the typed API and the wasm loader) is bundled to a
  * single self-contained ESM file, and the two Go build artifacts the engine
  * needs at runtime — tsvsheet.wasm and wasm_exec.js — are copied beside it so

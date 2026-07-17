@@ -1,5 +1,5 @@
 /**
- * TypeScript declarations for @uplang/tsvsheet — the embedded-WebAssembly
+ * TypeScript declarations for @tsvsheet/tsvsheet — the embedded-WebAssembly
  * tsvsheet engine. The shapes mirror the JSON the Go engine emits.
  */
 

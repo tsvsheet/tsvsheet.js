@@ -1,5 +1,5 @@
 /**
- * Unit tests for @uplang/tsvsheet: the typed Engine facade over the embedded
+ * Unit tests for @tsvsheet/tsvsheet: the typed Engine facade over the embedded
  * WebAssembly engine, the load contract (including the bad-bytes failure path),
  * and the <tsv-sheet> custom element rendered over a minimal happy-dom DOM.
  * The suite alone reaches full line coverage of src/tsvsheet (wasm_exec.js, the

@@ -24,8 +24,8 @@ test: ## node --test with 100% line coverage of src/tsvsheet
 	npm test
 
 wasm: ## Re-download the pinned engine wasm + Go runtime glue
-	gh release download $(TSVSHEET_WASM_VERSION) --repo uplang/go-tsvsheet --pattern 'tsvsheet.wasm' --output src/tsvsheet/tsvsheet.wasm --clobber
-	gh release download $(TSVSHEET_WASM_VERSION) --repo uplang/go-tsvsheet --pattern 'wasm_exec.js' --output src/tsvsheet/wasm_exec.js --clobber
+	gh release download $(TSVSHEET_WASM_VERSION) --repo tsvsheet/go-tsvsheet --pattern 'tsvsheet.wasm' --output src/tsvsheet/tsvsheet.wasm --clobber
+	gh release download $(TSVSHEET_WASM_VERSION) --repo tsvsheet/go-tsvsheet --pattern 'wasm_exec.js' --output src/tsvsheet/wasm_exec.js --clobber
 
 playground: ## Build the browser playground bundle
 	node playground/build.mjs
