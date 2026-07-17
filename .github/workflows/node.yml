@@ -1,0 +1,27 @@
+# The JavaScript package's quality gate: eslint (complexity <= 7) and the node
+# test runner at 100% line coverage of src/tsvsheet. The engine is the embedded
+# tsvsheet.wasm (a Go build artifact); wasm_exec.js is excluded from coverage.
+name: node
+on:
+  push:
+    branches: [main]
+  pull_request:
+    branches: [main]
+concurrency:
+  group: node-${{ github.ref }}
+  cancel-in-progress: true
+permissions:
+  contents: read
+jobs:
+  node:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@v5
+        with:
+          persist-credentials: false
+      - uses: actions/setup-node@v4
+        with:
+          node-version: "22"
+      - run: npm ci
+      - run: make ci

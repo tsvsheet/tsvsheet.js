@@ -1,0 +1,27 @@
+{
+	"name": "@uplang/tsvsheet",
+	"version": "0.1.0",
+	"description": "tsvsheet — a spreadsheet for plain text; the Go engine embedded as WebAssembly, with a typed API and a <tsv-sheet> web component",
+	"type": "module",
+	"main": "src/tsvsheet/index.js",
+	"exports": {
+		".": "./src/tsvsheet/index.js",
+		"./tsv-sheet": "./src/tsvsheet/tsv-sheet.js"
+	},
+	"types": "src/tsvsheet/index.d.ts",
+	"files": [
+		"src"
+	],
+	"scripts": {
+		"test": "node --test --experimental-test-coverage --test-coverage-include='src/tsvsheet/**' --test-coverage-exclude='src/tsvsheet/wasm_exec.js' --test-coverage-lines=100 tests/*.test.js",
+		"lint": "eslint src/tsvsheet tests",
+		"playground": "node playground/build.mjs"
+	},
+	"license": "MIT",
+	"homepage": "https://uplang.org",
+	"devDependencies": {
+		"esbuild": "^0.28.1",
+		"eslint": "^9.0.0",
+		"happy-dom": "^19.0.0"
+	}
+}

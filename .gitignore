@@ -1,0 +1,8 @@
+# JavaScript build artifacts
+node_modules/
+dist/
+
+# Playground bundle + copied engine assets (rebuilt by playground/build.mjs)
+playground/tsvsheet.bundle.js
+playground/tsvsheet.wasm
+playground/wasm_exec.js
