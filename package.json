@@ -1,6 +1,7 @@
 {
 	"name": "@tsvsheet/tsvsheet",
 	"version": "0.1.0",
+	"private": true,
 	"description": "tsvsheet — a spreadsheet for plain text; the Go engine embedded as WebAssembly, with a typed API and a <tsv-sheet> web component",
 	"type": "module",
 	"main": "src/tsvsheet/index.js",
@@ -18,7 +19,7 @@
 		"playground": "node playground/build.mjs"
 	},
 	"license": "MIT",
-	"homepage": "https://uplang.org",
+	"homepage": "https://tsvsheet.com",
 	"devDependencies": {
 		"esbuild": "^0.28.1",
 		"eslint": "^9.0.0",
