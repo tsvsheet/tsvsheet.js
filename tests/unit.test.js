@@ -210,6 +210,25 @@ test("readText/readBytes: the browser fetch path", async () => {
 	}
 });
 
+test("loadFrom: a page-provided globalThis.Go skips the eval path (CSP)", async (t) => {
+	// A CSP-strict page loads wasm_exec.js as a classic <script>, so Go is
+	// already defined; loadFrom must use it instead of new Function (an eval
+	// sink that default-src 'self' blocks).
+	let constructed = 0;
+	class PageGo {
+		constructor() {
+			constructed++;
+			throw new Error("stop after construction — this test only cares that PageGo was chosen");
+		}
+	}
+	globalThis.Go = PageGo;
+	t.after(() => {
+		delete globalThis.Go;
+	});
+	await assert.rejects(loadFrom(new Uint8Array([0])), /stop after construction/);
+	assert.equal(constructed, 1);
+});
+
 test("defineGo: a script that fails to define Go is a load error", () => {
 	assert.throws(
 		() => defineGo("globalThis.Go = 42;"), // not a constructor

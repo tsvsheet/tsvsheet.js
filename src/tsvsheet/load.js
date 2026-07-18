@@ -92,13 +92,19 @@ async function instantiate(bytes, Go) {
 }
 
 /**
- * Instantiate the engine from caller-supplied wasm `bytes`, reading only
- * `wasm_exec.js` from disk/network for the Go runtime.
+ * Instantiate the engine from caller-supplied wasm `bytes`. When the page has
+ * already defined `globalThis.Go` (a classic `<script src="wasm_exec.js">`,
+ * the CSP-strict route — `new Function` is an eval sink that
+ * `default-src 'self'` blocks), that runtime is used directly; otherwise
+ * `wasm_exec.js` is read from beside this module and evaluated.
  * @param {BufferSource} bytes the `tsvsheet.wasm` module bytes
  * @returns {Promise<Engine>}
  */
 export async function loadFrom(bytes) {
-	return instantiate(bytes, defineGo(await readText("wasm_exec.js")));
+	const Go = typeof globalThis.Go === "function"
+		? globalThis.Go
+		: defineGo(await readText("wasm_exec.js"));
+	return instantiate(bytes, Go);
 }
 
 /**
