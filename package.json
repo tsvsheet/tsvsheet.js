@@ -23,6 +23,6 @@
 	"devDependencies": {
 		"esbuild": "^0.28.1",
 		"eslint": "^9.0.0",
-		"happy-dom": "^19.0.0"
+		"happy-dom": "^20.11.0"
 	}
 }
