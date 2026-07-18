@@ -34,7 +34,7 @@ const window = new Window();
 globalThis.HTMLElement = window.HTMLElement;
 globalThis.customElements = window.customElements;
 globalThis.Event = window.Event;
-const { TsvSheet, buildTable, readSource, sharedEngine, toTsv } = await import(
+const { TsvSheet, buildTable, readSource, sharedEngine } = await import(
 	"../src/tsvsheet/tsv-sheet.js"
 );
 TsvSheet.loader = async () => engine;
@@ -74,9 +74,46 @@ test("setCell: an edit recomputes dependents and round-trips the source", () => 
 	assert.equal(view.source[0][0], "5");
 	assert.equal(view.computed[0][2], "7"); // C1 = A1 + B1 = 5 + 2
 	assert.equal(view.computed[1][0], "50"); // A2 = A1 * 10
-	// The returned source, re-serialized, recomputes to the same grid.
-	const again = engine.compute(toTsv(view.source));
+	// The returned canonical text recomputes to the same grid.
+	const again = engine.compute(view.text);
 	assert.deepEqual(again.computed[0], view.computed[0]);
+});
+
+// -- engine: canonical text (view.text) -------------------------------------
+
+const COMMENTED = "#!/usr/bin/env tsvsheet\n# prices\n1\t2\n# note\n=A1+B1\n";
+
+test("text: every view carries the canonical source text verbatim", () => {
+	assert.equal(engine.compute(COMMENTED).text, COMMENTED);
+});
+
+test("text: setCell preserves comment and shebang lines in position", () => {
+	const view = engine.setCell(COMMENTED, 0, 1, "9");
+	assert.equal(view.text, "#!/usr/bin/env tsvsheet\n# prices\n1\t9\n# note\n=A1+B1\n");
+});
+
+test("text: structural edits keep comments anchored", () => {
+	assert.equal(
+		engine.insertRow(COMMENTED, 1, 0).text,
+		"#!/usr/bin/env tsvsheet\n# prices\n1\t2\n# note\n\t\n=A1+B1\n",
+	);
+	// Deleting column A removes the formula cell riding in it; the comment
+	// lines still hold their positions.
+	assert.equal(
+		engine.deleteCol(COMMENTED, 0, 0).text,
+		"#!/usr/bin/env tsvsheet\n# prices\n2\n# note\n\n",
+	);
+	// A formula OUT of the deleted column survives with its shifted reference
+	// re-rendered canonically.
+	assert.equal(
+		engine.deleteCol("# c\n1\t2\t=A1+B1\n", 0, 0).text,
+		"# c\n2\t=#REF! + A1\n",
+	);
+});
+
+test("text: is a fixed point through recompute", () => {
+	const text = engine.setCell(COMMENTED, 4, 0, "=A1*B1").text;
+	assert.equal(engine.compute(text).text, text);
 });
 
 test("structural edits shift, blank, and #REF! as specified", () => {
@@ -195,10 +232,6 @@ test("pickEngine: a missing tsvsheet global is a load error", () => {
 
 // -- web component: pure helpers -------------------------------------------
 
-test("toTsv: joins columns with TAB and rows with newline", () => {
-	assert.equal(toTsv([["1", "2"], ["=A1"]]), "1\t2\n=A1");
-});
-
 test("buildTable: editable cells carry their coordinates", () => {
 	const table = buildTable(window.document, [["a", "b"], ["c", "d"]]);
 	assert.equal(table.querySelectorAll("tr").length, 2);
@@ -260,6 +293,22 @@ test("tsv-sheet: registered, renders, edits, and refreshes", async () => {
 	assert.ok(el.querySelector("table") !== null);
 
 	el.remove(); // non-volatile: no timer to clear
+});
+
+test("tsv-sheet: source exposes the canonical text, comments intact through edits", async () => {
+	const el = window.document.createElement("tsv-sheet");
+	el.setAttribute("source", "# prices\n1\t2\n# note\n=A1+B1");
+	window.document.body.appendChild(el);
+	await el.ready;
+
+	const a1 = el.querySelector('td[data-row="0"][data-col="0"]');
+	a1.textContent = "5";
+	a1.dispatchEvent(new window.Event("focusout", { bubbles: true }));
+
+	// The host persists el.source: engine-canonical text, comments preserved.
+	assert.equal(el.source, "# prices\n5\t2\n# note\n=A1+B1\n");
+
+	el.remove();
 });
 
 test("tsv-sheet: a volatile sheet schedules and clears a refresh timer", async () => {

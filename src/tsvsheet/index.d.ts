@@ -56,6 +56,13 @@ export interface Trace {
 export interface View {
 	computed: Grid;
 	source: Grid;
+	/**
+	 * The canonical `.tsvt` source text after the operation — comment and
+	 * shebang lines preserved in position, every line newline-terminated. The
+	 * one sanctioned serialization: persist this, never rebuild text from a
+	 * grid.
+	 */
+	text: string;
 	/** Static diagnostics, or `null` when there are none. */
 	diagnostics: Diagnostic[] | null;
 	volatile: boolean;

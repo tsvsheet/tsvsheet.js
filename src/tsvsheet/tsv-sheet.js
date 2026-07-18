@@ -12,9 +12,6 @@
  */
 import { load } from "./load.js";
 
-/** Serialize a computed/source grid back to `.tsvt` (TAB columns, NL rows). */
-export const toTsv = (grid) => grid.map((row) => row.join("\t")).join("\n");
-
 /** Build one editable table cell carrying its zero-based coordinates. */
 function cell(doc, value, row, col) {
 	const td = doc.createElement("td");
@@ -111,8 +108,18 @@ export class TsvSheet extends HTMLElement {
 		const row = Number(td.dataset.row);
 		const col = Number(td.dataset.col);
 		const view = this.#engine.setCell(this.#source, row, col, td.textContent);
-		this.#source = toTsv(view.source);
+		this.#source = view.text;
 		this.#apply(view);
+	}
+
+	/**
+	 * The document's `.tsvt` text, for hosts that persist it: the text as
+	 * loaded until the first edit, then the engine's canonical serialization
+	 * (comment and shebang lines preserved — the element never serializes a
+	 * grid itself).
+	 */
+	get source() {
+		return this.#source;
 	}
 
 	#schedule() {

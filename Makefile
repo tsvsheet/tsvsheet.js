@@ -6,7 +6,7 @@
 # gate). The engine itself is NOT reimplemented here: it is the Go engine
 # compiled to WebAssembly and embedded, re-downloaded by the `wasm` target.
 
-TSVSHEET_WASM_VERSION := v0.3.3
+TSVSHEET_WASM_VERSION := v0.6.1
 
 .PHONY: help check ci lint test wasm playground
 
