@@ -39,7 +39,7 @@ const { TsvSheet, buildTable, readSource, sharedEngine } = await import(
 );
 TsvSheet.loader = async () => engine;
 
-const SHEET = "1\t2\t=A1+B1\n=A1*10\t=A2/0\t=NOW()";
+const SHEET = "1\t2\t=A1+B1\n=A1*10\t=A2/0\t=volatile(NOW())";
 
 // -- engine: compute --------------------------------------------------------
 
@@ -48,7 +48,7 @@ test("compute: literals and formulas resolve in place", () => {
 	assert.deepEqual(view.computed[0], ["1", "2", "3"]);
 	assert.equal(view.computed[1][0], "10");
 	assert.equal(view.source[0][2], "=A1+B1");
-	assert.equal(view.volatile, true); // =NOW() is clock-volatile
+	assert.equal(view.volatile, true); // volatile(NOW()) marks the sheet volatile
 });
 
 test("compute: a division by zero propagates as #DIV/0!", () => {
@@ -332,7 +332,7 @@ test("tsv-sheet: source exposes the canonical text, comments intact through edit
 
 test("tsv-sheet: a volatile sheet schedules and clears a refresh timer", async () => {
 	const el = window.document.createElement("tsv-sheet");
-	el.setAttribute("source", "=NOW()");
+	el.setAttribute("source", "=volatile(NOW())");
 	window.document.body.appendChild(el);
 	await el.ready;
 	assert.ok(el.querySelector("table") !== null);
