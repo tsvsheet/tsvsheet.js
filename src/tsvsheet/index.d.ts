@@ -85,6 +85,17 @@ export class Engine {
 	deleteRow(source: string, row: number, col: number): View;
 	insertCol(source: string, row: number, col: number): View;
 	deleteCol(source: string, row: number, col: number): View;
+	duplicateRow(source: string, row: number, col: number): View;
+	duplicateCol(source: string, row: number, col: number): View;
+	fill(
+		source: string,
+		fromRow: number,
+		fromCol: number,
+		loRow: number,
+		loCol: number,
+		hiRow: number,
+		hiCol: number,
+	): View;
 	references(source: string, row: number, col: number): References;
 	explain(source: string, row: number, col: number): Trace;
 }

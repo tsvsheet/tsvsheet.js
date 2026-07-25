@@ -47,6 +47,29 @@ export class Engine {
 		return this.#call("deleteCol", source, row, col);
 	}
 
+	/**
+	 * Duplicate `row` below itself and recompute: the duplicate's references
+	 * rebase one row down (`$`-pinned coordinates hold) and the rest of the
+	 * grid shifts as an insert shifts it.
+	 */
+	duplicateRow(source, row, col) {
+		return this.#call("duplicateRow", source, row, col);
+	}
+
+	/** Duplicate `col` to its right and recompute (references rebase as above). */
+	duplicateCol(source, row, col) {
+		return this.#call("duplicateCol", source, row, col);
+	}
+
+	/**
+	 * Copy the cell at (fromRow, fromCol) into every cell of the inclusive
+	 * target span with fill semantics — unpinned references shift by each
+	 * target's offset, `$`-pinned coordinates hold — and recompute.
+	 */
+	fill(source, fromRow, fromCol, loRow, loCol, hiRow, hiCol) {
+		return this.#call("fill", source, fromRow, fromCol, loRow, loCol, hiRow, hiCol);
+	}
+
 	/** Return the precedents and dependents of the cell at (row, col). */
 	references(source, row, col) {
 		return this.#call("references", source, row, col);

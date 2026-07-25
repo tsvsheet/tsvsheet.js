@@ -123,6 +123,25 @@ test("structural edits shift, blank, and #REF! as specified", () => {
 	assert.equal(engine.deleteCol(SHEET, 0, 0).computed[0][0], "2");
 });
 
+test("fill copies with rebased references; $-pins hold", () => {
+	// Fill C1 (=A1+B1) into C2: the references follow the target row.
+	const filled = engine.fill(SHEET, 0, 2, 1, 2, 1, 2);
+	assert.equal(filled.source[1][2], "=A2 + B2");
+	// A pinned coordinate stays put across the same fill.
+	const pinned = engine.fill("1\t=$A$1+A1\n2\n", 0, 1, 1, 1, 1, 1);
+	assert.equal(pinned.source[1][1], "=$A$1 + A2");
+});
+
+test("duplicateRow/duplicateCol rebase the duplicate and shift the grid", () => {
+	const rows = engine.duplicateRow("10\n=A1*2\n", 1, 0);
+	assert.deepEqual(
+		rows.source.map((r) => r[0]),
+		["10", "=A1*2", "=A2 * 2"],
+	);
+	const cols = engine.duplicateCol("=B1*2\t7\n", 0, 0);
+	assert.deepEqual(cols.source[0], ["=C1 * 2", "=D1 * 2", "7"]);
+});
+
 // -- engine: references + explain ------------------------------------------
 
 test("references: precedents are spans, dependents are addresses", () => {
