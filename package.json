@@ -2,7 +2,7 @@
 	"name": "@tsvsheet/tsvsheet",
 	"version": "0.1.0",
 	"private": true,
-	"description": "tsvsheet — a spreadsheet for plain text; the Go engine embedded as WebAssembly, with a typed API and a <tsv-sheet> web component",
+	"description": "tsvsheet — a spreadsheet in plain text; the Go engine embedded as WebAssembly, with a typed API and a <tsv-sheet> web component",
 	"type": "module",
 	"main": "src/tsvsheet/index.js",
 	"exports": {

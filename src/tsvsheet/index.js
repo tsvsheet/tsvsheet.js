@@ -1,5 +1,5 @@
 /**
- * @tsvsheet/tsvsheet — a spreadsheet for plain text, in the browser and Node.
+ * @tsvsheet/tsvsheet — a spreadsheet in plain text, in the browser and Node.
  *
  * This package does NOT reimplement the tsvsheet engine in JavaScript: it
  * EMBEDS the Go engine compiled to WebAssembly (`tsvsheet.wasm`) and exposes a
