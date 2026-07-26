@@ -89,7 +89,10 @@ test("text: every view carries the canonical source text verbatim", () => {
 
 test("text: setCell preserves comment and shebang lines in position", () => {
 	const view = engine.setCell(COMMENTED, 0, 1, "9");
-	assert.equal(view.text, "#!/usr/bin/env tsvsheet\n# prices\n1\t9\n# note\n=A1+B1\n");
+	assert.equal(
+		view.text,
+		"#!/usr/bin/env tsvsheet\n# prices\n1\t9\n# note\n=A1+B1\n",
+	);
 });
 
 test("text: structural edits keep comments anchored", () => {
@@ -237,14 +240,22 @@ test("loadFrom: a page-provided globalThis.Go skips the eval path (CSP)", async 
 	class PageGo {
 		constructor() {
 			constructed++;
-			throw new Error("stop after construction — this test only cares that PageGo was chosen");
+			throw new Error(
+				"stop after construction — this test only cares that PageGo was chosen",
+			);
 		}
 	}
 	globalThis.Go = PageGo;
 	t.after(() => {
-		delete globalThis.Go;
+		// Assigning undefined rather than deleting: load.js detects the runtime with
+		// `typeof globalThis.Go === "function"`, so absence and undefined are the same
+		// to it, and biome's noDelete rule is satisfied without a suppression.
+		globalThis.Go = undefined;
 	});
-	await assert.rejects(loadFrom(new Uint8Array([0])), /stop after construction/);
+	await assert.rejects(
+		loadFrom(new Uint8Array([0])),
+		/stop after construction/,
+	);
 	assert.equal(constructed, 1);
 });
 
@@ -271,7 +282,10 @@ test("pickEngine: a missing tsvsheet global is a load error", () => {
 // -- web component: pure helpers -------------------------------------------
 
 test("buildTable: editable cells carry their coordinates", () => {
-	const table = buildTable(window.document, [["a", "b"], ["c", "d"]]);
+	const table = buildTable(window.document, [
+		["a", "b"],
+		["c", "d"],
+	]);
 	assert.equal(table.querySelectorAll("tr").length, 2);
 	const td = table.querySelector('td[data-row="1"][data-col="1"]');
 	assert.equal(td.textContent, "d");

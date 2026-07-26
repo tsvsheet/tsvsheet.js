@@ -1,3 +1,4 @@
+import { Engine } from "./engine.js";
 /**
  * load — instantiate the embedded WebAssembly engine and hand back a ready
  * {@link Engine}. The Go engine is shipped as two build artifacts beside this
@@ -16,7 +17,6 @@
  * lets the module-level environment detection decide.
  */
 import { CODES, TsvsheetError } from "./errors.js";
-import { Engine } from "./engine.js";
 
 const inNode =
 	typeof process !== "undefined" && process.versions?.node !== undefined;
@@ -47,7 +47,9 @@ export async function readText(name, node = inNode) {
 
 /** Read a sibling asset as raw bytes (Node: fs; browser: fetch). */
 export async function readBytes(name, node = inNode) {
-	return new Uint8Array(node ? await nodeRead(name) : await fetchArrayBuffer(name));
+	return new Uint8Array(
+		node ? await nodeRead(name) : await fetchArrayBuffer(name),
+	);
 }
 
 /**
@@ -101,9 +103,10 @@ async function instantiate(bytes, Go) {
  * @returns {Promise<Engine>}
  */
 export async function loadFrom(bytes) {
-	const Go = typeof globalThis.Go === "function"
-		? globalThis.Go
-		: defineGo(await readText("wasm_exec.js"));
+	const Go =
+		typeof globalThis.Go === "function"
+			? globalThis.Go
+			: defineGo(await readText("wasm_exec.js"));
 	return instantiate(bytes, Go);
 }
 

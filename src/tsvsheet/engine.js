@@ -67,7 +67,16 @@ export class Engine {
 	 * target's offset, `$`-pinned coordinates hold — and recompute.
 	 */
 	fill(source, fromRow, fromCol, loRow, loCol, hiRow, hiCol) {
-		return this.#call("fill", source, fromRow, fromCol, loRow, loCol, hiRow, hiCol);
+		return this.#call(
+			"fill",
+			source,
+			fromRow,
+			fromCol,
+			loRow,
+			loCol,
+			hiRow,
+			hiCol,
+		);
 	}
 
 	/** Return the precedents and dependents of the cell at (row, col). */
