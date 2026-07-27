@@ -43,6 +43,11 @@ playground: ## Build the browser playground bundle
 # excluded). Running the SAME image here is what makes a local pass mean a remote
 # pass: a hand-rolled biome call would drift from the pinned one, and a gate that
 # disagrees with CI is a gate people stop trusting.
+# The tag floats on purpose and is not digest-pinned: the workflow references
+# the same `@v2`, so pinning a digest here would put the local gate on a
+# different binary than CI — the very drift this target exists to remove. It is
+# the org's own registry, already trusted by every workflow in the fleet, and
+# `?=` lets a caller pin a digest for a one-off audited run.
 TS_CI_IMAGE ?= ghcr.io/nicerobot/tools.build/ci/typescript:v2
 
 .PHONY: format-check
