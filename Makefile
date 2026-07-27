@@ -19,7 +19,7 @@ TSVSHEET_WASM_EXEC_SHA256 := 5b642017724b7bef23b4f6606e28e5ed9788fdd0cdfafc06f3f
 help: ## Show this help
 	@grep -E '^[a-zA-Z_-]+:.*## ' $(MAKEFILE_LIST) | awk 'BEGIN{FS=":.*## "}{printf "  %-10s %s\n", $$1, $$2}'
 
-check: lint test ## Full quality gate
+check: lint test format-check ## Full quality gate
 
 ci: check ## Full gate as run by CI
 
@@ -37,3 +37,14 @@ wasm: ## Re-download the pinned engine wasm + Go runtime glue
 
 playground: ## Build the browser playground bundle
 	node playground/build.mjs
+
+# CI runs biome over this repo through the shared TypeScript image, using its own
+# file-selection rules (generated markers, minified bundles and coverage/ are
+# excluded). Running the SAME image here is what makes a local pass mean a remote
+# pass: a hand-rolled biome call would drift from the pinned one, and a gate that
+# disagrees with CI is a gate people stop trusting.
+TS_CI_IMAGE ?= ghcr.io/nicerobot/tools.build/ci/typescript:v2
+
+.PHONY: format-check
+format-check: ## biome, via the same pinned image CI runs
+	docker run --rm -v "$(CURDIR)":/github/workspace -w /github/workspace $(TS_CI_IMAGE)
