@@ -32,6 +32,17 @@ export interface Span {
 }
 
 /** One static diagnostic reported by `compute`. */
+/**
+ * One declaration's rows and columns, as sorted 1-based positions — the
+ * numbering a reader sees in the gutter, not a 0-based index. A host renders
+ * these directly; the engine has already resolved every `count(…)` and
+ * from-the-end offset against the sheet's own extent.
+ */
+export interface Axes {
+	rows: number[];
+	cols: number[];
+}
+
 export interface Diagnostic {
 	cell: string;
 	message: string;
@@ -65,6 +76,12 @@ export interface View {
 	text: string;
 	/** Static diagnostics, or `null` when there are none. */
 	diagnostics: Diagnostic[] | null;
+	/** Rows and columns the sheet's `#.hide` directives keep out of sight. */
+	hidden: Axes;
+	/** Rows and columns declared as headers with `#.header`. */
+	headers: Axes;
+	/** Rows and columns `#.freeze` pins while the rest scrolls. */
+	frozen: Axes;
 	volatile: boolean;
 }
 
