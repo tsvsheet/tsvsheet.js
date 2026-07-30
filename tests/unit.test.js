@@ -145,6 +145,47 @@ test("duplicateRow/duplicateCol rebase the duplicate and shift the grid", () => 
 	assert.deepEqual(cols.source[0], ["=C1 * 2", "=D1 * 2", "7"]);
 });
 
+test("paste rebases a copied block by target minus origin; pins hold", () => {
+	// B1:B2 copied (origin 0,1) and pasted two columns right at D1 (0,3):
+	// each formula's unpinned column follows; CRLF and a trailing newline are
+	// clipboard forms the block decoder absorbs.
+	const pasted = engine.paste(
+		"1\t=A1*2\n2\t=$A$1+A2\n",
+		0,
+		3,
+		0,
+		1,
+		"=A1*2\r\n=$A$1+A2\r\n",
+	);
+	assert.equal(pasted.source[0][3], "=C1 * 2");
+	assert.equal(pasted.source[1][3], "=$A$1 + C2");
+});
+
+test("paste with origin === target lands external text verbatim", () => {
+	const pasted = engine.paste("1\n2\n", 0, 1, 0, 1, "x\t=A1+A2");
+	assert.deepEqual(pasted.source[0], ["1", "x", "=A1 + A2"]);
+	assert.equal(pasted.computed[0][2], "3");
+});
+
+test("paste of an empty block cell clears its target; pasted lines are data", () => {
+	const cleared = engine.paste("a\tb\n", 0, 0, 0, 0, "\tc");
+	assert.deepEqual(cleared.source[0], ["", "c"]);
+	// A `#.` line pastes as cell data, never as a directive or comment.
+	const hash = engine.paste("x\n", 0, 0, 0, 0, "#. note");
+	assert.equal(hash.source[0][0], "#. note");
+	assert.equal(hash.text, "#. note\n"); // serialized, it IS a comment line — the documented SetCell-shared edge
+});
+
+test("paste is atomic: a malformed formula is an engine error naming the target", () => {
+	assert.throws(
+		() => engine.paste("1\n", 1, 0, 0, 0, "ok\t=1+"),
+		(err) =>
+			err instanceof TsvsheetError &&
+			err.code === CODES.ENGINE &&
+			err.message.includes("B2"),
+	);
+});
+
 // -- engine: references + explain ------------------------------------------
 
 test("references: precedents are spans, dependents are addresses", () => {

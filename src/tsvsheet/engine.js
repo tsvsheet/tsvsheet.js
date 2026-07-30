@@ -79,6 +79,21 @@ export class Engine {
 		);
 	}
 
+	/**
+	 * Paste a clipboard block (TAB-separated cells, newline-separated rows)
+	 * with its top-left at (row, col), as copied with its top-left at
+	 * (originRow, originCol): every formula rebases by the single delta
+	 * target−origin with fill semantics — unpinned references shift,
+	 * `$`-pinned coordinates hold — literals land verbatim, empty block cells
+	 * clear their targets, and every pasted line is data (a block has no
+	 * comment or directive semantics). Passing the target as the origin pastes
+	 * external text with no rebasing. Atomic: a malformed formula is an engine
+	 * error naming its target cell and the source is unchanged.
+	 */
+	paste(source, row, col, originRow, originCol, block) {
+		return this.#call("paste", source, row, col, originRow, originCol, block);
+	}
+
 	/** Return the precedents and dependents of the cell at (row, col). */
 	references(source, row, col) {
 		return this.#call("references", source, row, col);

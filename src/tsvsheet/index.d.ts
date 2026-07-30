@@ -113,6 +113,14 @@ export class Engine {
 		hiRow: number,
 		hiCol: number,
 	): View;
+	paste(
+		source: string,
+		row: number,
+		col: number,
+		originRow: number,
+		originCol: number,
+		block: string,
+	): View;
 	references(source: string, row: number, col: number): References;
 	explain(source: string, row: number, col: number): Trace;
 }
