@@ -55,8 +55,16 @@ test("compute: a division by zero propagates as #DIV/0!", () => {
 	assert.equal(engine.compute(SHEET).computed[1][1], "#DIV/0!");
 });
 
-test("compute: a static sheet is not volatile", () => {
-	assert.equal(engine.compute("1\t2").volatile, false);
+test("compute: a static sheet is not volatile and asks no cadence", () => {
+	const view = engine.compute("1\t2");
+	assert.equal(view.volatile, false);
+	assert.equal(view.schedules, null);
+});
+
+test("compute: volatile cadence specs surface as schedules", () => {
+	const view = engine.compute('=volatile(NOW(), "250ms")');
+	assert.equal(view.volatile, true);
+	assert.deepEqual(view.schedules, ["250ms"]);
 });
 
 test("compute: an unknown function is a non-fatal diagnostic", () => {
@@ -184,6 +192,17 @@ test("paste is atomic: a malformed formula is an engine error naming the target"
 			err.code === CODES.ENGINE &&
 			err.message.includes("B2"),
 	);
+});
+
+test("seedData stocks the store a relative IMPORT* resolves against", () => {
+	const names = engine.seedData({ "balances.tsv": "310000\n", "b.csv": "1\n" });
+	assert.deepEqual(names, ["b.csv", "balances.tsv"]);
+	const view = engine.compute('=importcell("balances.tsv")');
+	assert.equal(view.computed[0][0], "310000");
+	// An absolute URL stays refused: the seed store is the only reach.
+	const refused = engine.compute('=importcell("https://example.com/x.tsv")');
+	assert.equal(refused.computed[0][0], "#IMPORT!");
+	engine.seedData({}); // leave the shared engine unseeded for other tests
 });
 
 // -- engine: references + explain ------------------------------------------

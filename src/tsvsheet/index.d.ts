@@ -83,6 +83,11 @@ export interface View {
 	/** Rows and columns `#.freeze` pins while the rest scrolls. */
 	frozen: Axes;
 	volatile: boolean;
+	/** One cadence spec per volatile(…) call — Go durations ("250ms") or isnow
+	 * patterns — so a page can recompute at the soonest cadence the sheet asks
+	 * for rather than a flat interval. `null` for a static sheet (and for a
+	 * volatile sheet whose calls name no cadence). */
+	schedules: string[] | null;
 }
 
 /** The precedents and dependents of a cell (`null` when there are none). */
@@ -122,6 +127,7 @@ export class Engine {
 		block: string,
 	): View;
 	references(source: string, row: number, col: number): References;
+	seedData(files: Record<string, string>): string[];
 	explain(source: string, row: number, col: number): Trace;
 }
 

@@ -99,6 +99,16 @@ export class Engine {
 		return this.#call("references", source, row, col);
 	}
 
+	/**
+	 * Replace the seed store a relative `IMPORT*` resolves against with the
+	 * given name → tabular-text map (the page's `--data`; nothing inside a
+	 * sheet can add to it or reach past it, and absolute URLs stay refused).
+	 * Returns the sorted names now available.
+	 */
+	seedData(files) {
+		return this.#call("seedData", files);
+	}
+
 	/** Trace how the cell at (row, col) was produced. */
 	explain(source, row, col) {
 		return this.#call("explain", source, row, col);
