@@ -227,15 +227,12 @@ test("pasteInto's span corners travel in (loRow, loCol, hiRow, hiCol) order", ()
 		1,
 		"x",
 	);
-	assert.deepEqual(
-		view.source,
-		[
-			["1", "x", "3", "4"],
-			["5", "x", "7", "8"],
-			["9", "x", "11", "12"],
-			["0", "x", "0", "0"],
-		],
-	);
+	assert.deepEqual(view.source, [
+		["1", "x", "3", "4"],
+		["5", "x", "7", "8"],
+		["9", "x", "11", "12"],
+		["0", "x", "0", "0"],
+	]);
 });
 
 test("a short-arity engine call answers an error, never a dead engine", () => {
