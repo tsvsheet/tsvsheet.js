@@ -212,6 +212,42 @@ test("pasteInto tiles an exactly-divisible selection, rebasing per tile", () => 
 	);
 });
 
+test("pasteInto's span corners travel in (loRow, loCol, hiRow, hiCol) order", () => {
+	// An ASYMMETRIC span over a distinctive grid: any transposition of the
+	// four coordinates fills a different rectangle. (The binding is js/wasm-
+	// tagged and invisible to the Go gate — this test is its argument-order
+	// contract.)
+	const view = engine.pasteInto(
+		"1\t2\t3\t4\n5\t6\t7\t8\n9\t10\t11\t12\n0\t0\t0\t0\n",
+		0,
+		1,
+		3,
+		1,
+		0,
+		1,
+		"x",
+	);
+	assert.deepEqual(
+		view.source,
+		[
+			["1", "x", "3", "4"],
+			["5", "x", "7", "8"],
+			["9", "x", "11", "12"],
+			["0", "x", "0", "0"],
+		],
+	);
+});
+
+test("a short-arity engine call answers an error, never a dead engine", () => {
+	// The recover guard: a panic inside a binding must surface as a normal
+	// engine error and leave the engine alive for the next call.
+	assert.throws(
+		() => engine.pasteInto("1\n", 0, 0),
+		(err) => err instanceof TsvsheetError && err.code === CODES.ENGINE,
+	);
+	assert.equal(engine.compute("1\t2\n").computed[0][1], "2"); // still alive
+});
+
 test("paste is atomic: a malformed formula is an engine error naming the target", () => {
 	assert.throws(
 		() => engine.paste("1\n", 1, 0, 0, 0, "ok\t=1+"),
