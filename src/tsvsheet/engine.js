@@ -94,6 +94,28 @@ export class Engine {
 		return this.#call("paste", source, row, col, originRow, originCol, block);
 	}
 
+	/**
+	 * Paste a clipboard block over the inclusive target span. A span whose
+	 * rows AND columns are exact multiples of the block's dimensions is TILED
+	 * by the block — each tile rebased to its own position, exactly as
+	 * separate pastes would be, so one copied row spread-pastes onto every
+	 * selected row. Any other span places the block once at its top-left
+	 * (paste semantics). Atomic across all tiles.
+	 */
+	pasteInto(source, loRow, loCol, hiRow, hiCol, originRow, originCol, block) {
+		return this.#call(
+			"pasteInto",
+			source,
+			loRow,
+			loCol,
+			hiRow,
+			hiCol,
+			originRow,
+			originCol,
+			block,
+		);
+	}
+
 	/** Return the precedents and dependents of the cell at (row, col). */
 	references(source, row, col) {
 		return this.#call("references", source, row, col);

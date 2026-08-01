@@ -126,6 +126,16 @@ export class Engine {
 		originCol: number,
 		block: string,
 	): View;
+	pasteInto(
+		source: string,
+		loRow: number,
+		loCol: number,
+		hiRow: number,
+		hiCol: number,
+		originRow: number,
+		originCol: number,
+		block: string,
+	): View;
 	references(source: string, row: number, col: number): References;
 	seedData(files: Record<string, string>): string[];
 	explain(source: string, row: number, col: number): Trace;

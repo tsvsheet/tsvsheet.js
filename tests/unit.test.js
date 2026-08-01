@@ -178,10 +178,38 @@ test("paste with origin === target lands external text verbatim", () => {
 test("paste of an empty block cell clears its target; pasted lines are data", () => {
 	const cleared = engine.paste("a\tb\n", 0, 0, 0, 0, "\tc");
 	assert.deepEqual(cleared.source[0], ["", "c"]);
-	// A `#.` line pastes as cell data, never as a directive or comment.
-	const hash = engine.paste("x\n", 0, 0, 0, 0, "#. note");
-	assert.equal(hash.source[0][0], "#. note");
-	assert.equal(hash.text, "#. note\n"); // serialized, it IS a comment line — the documented SetCell-shared edge
+	// A first-column cell that would re-read as a comment line is REFUSED —
+	// the engine's comment-marker-injection guard (a paste can never smuggle
+	// a directive into the file's serialization).
+	assert.throws(
+		() => engine.paste("x\n", 0, 0, 0, 0, "#. note"),
+		(err) => err instanceof TsvsheetError && err.code === CODES.ENGINE,
+	);
+});
+
+test("pasteInto tiles an exactly-divisible selection, rebasing per tile", () => {
+	// One copied row over three selected rows: each row's formula reads its
+	// own line — the spread-paste a spreadsheet user expects.
+	const view = engine.pasteInto(
+		"10\t2\t=A1/B1\n20\t4\n30\t5\n",
+		1,
+		2,
+		2,
+		2,
+		0,
+		2,
+		"=A1/B1",
+	);
+	assert.equal(view.source[1][2], "=A2 / B2");
+	assert.equal(view.source[2][2], "=A3 / B3");
+	assert.equal(view.computed[1][2], "5");
+	assert.equal(view.computed[2][2], "6");
+	// A non-multiple span places once at its top-left.
+	const single = engine.pasteInto("x\nx\nx\n", 0, 0, 2, 0, 0, 0, "a\nb");
+	assert.deepEqual(
+		single.source.map((r) => r[0]),
+		["a", "b", "x"],
+	);
 });
 
 test("paste is atomic: a malformed formula is an engine error naming the target", () => {
