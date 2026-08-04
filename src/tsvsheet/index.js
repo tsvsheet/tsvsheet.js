@@ -9,6 +9,7 @@
  * references, and explain a cell. The `<tsv-sheet>` custom element (imported
  * from `@tsvsheet/tsvsheet/tsv-sheet`) renders a live grid over the same engine.
  */
+export { colLetter, rowLabel } from "./a1.js";
 export { CODES, TsvsheetError } from "./errors.js";
 export { Engine } from "./engine.js";
 export { load, loadFrom } from "./load.js";

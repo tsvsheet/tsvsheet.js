@@ -15,8 +15,10 @@ import {
 	CODES,
 	Engine,
 	TsvsheetError,
+	colLetter,
 	load,
 	loadFrom,
+	rowLabel,
 } from "../src/tsvsheet/index.js";
 import {
 	defineGo,
@@ -544,4 +546,33 @@ test("tsv-sheet: refresh before the engine loads is a no-op", () => {
 	const el = window.document.createElement("tsv-sheet");
 	el.refresh(); // engine undefined — returns without rendering
 	assert.equal(el.querySelector("table"), null);
+});
+
+// -- A1 labels --------------------------------------------------------------
+
+test("colLetter: bijective base-26, the boundaries that catch an off-by-one", () => {
+	assert.equal(colLetter(0), "A");
+	assert.equal(colLetter(25), "Z");
+	assert.equal(
+		colLetter(26),
+		"AA",
+		"there is no zero digit: after Z comes AA, not BA",
+	);
+	assert.equal(colLetter(51), "AZ");
+	assert.equal(colLetter(52), "BA");
+	assert.equal(colLetter(701), "ZZ");
+	assert.equal(colLetter(702), "AAA");
+});
+
+test("colLetter: agrees with the engine's own A1 naming", () => {
+	// The engine reports diagnostics by A1 cell name; a label that disagreed
+	// with it would point a reader at the wrong column.
+	const view = engine.compute("1\t2\t=nosuchfn(1)\n");
+	const cell = view.diagnostics?.[0]?.cell ?? "";
+	assert.equal(cell, `${colLetter(2)}1`, "the third column is C in both");
+});
+
+test("rowLabel: 1-based, the same off-by-one on the other axis", () => {
+	assert.equal(rowLabel(0), "1");
+	assert.equal(rowLabel(41), "42");
 });

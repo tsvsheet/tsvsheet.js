@@ -32,6 +32,15 @@ export interface Span {
 }
 
 /**
+ * The A1 column label for a zero-based index: 0 → A, 25 → Z, 26 → AA.
+ * Bijective base-26, matching the addresses formulas use.
+ */
+export function colLetter(index: number): string;
+
+/** The A1 row label for a zero-based index: 0 → "1". */
+export function rowLabel(index: number): string;
+
+/**
  * A document's totals, and the budget that decides how it opens. A document
  * whose `cells` exceed `budget` is view/compute-only and pages — the same
  * ruling, and the same ceiling, in every frontend (spec 021).
