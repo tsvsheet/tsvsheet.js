@@ -41,6 +41,53 @@ TsvSheet.loader = async () => engine;
 
 const SHEET = "1\t2\t=A1+B1\n=A1*10\t=A2/0\t=volatile(NOW())";
 
+// -- engine: the windowed capability (spec 021) -----------------------------
+
+// A document past BrowserLimits.ResidentCells (100,000 cells): the browser
+// pages it exactly as the terminal does, rather than refusing it.
+const OVER_BUDGET = (() => {
+	const rows = [];
+	for (let i = 0; i < 60000; i++) rows.push(`r${i}\t${i}`);
+	return `${rows.join("\n")}\n`;
+})();
+
+test("census: totals and the budget decide whether a document pages", () => {
+	const counted = engine.census(OVER_BUDGET);
+	assert.equal(counted.rows, 60000);
+	assert.equal(counted.cols, 2);
+	assert.equal(counted.cells, 120000);
+	assert.equal(counted.isWindowed, true, "past the budget, so it pages");
+	assert.ok(
+		counted.cells > counted.budget,
+		"the census reports the ceiling it was judged against",
+	);
+});
+
+test("census: an in-budget document is not windowed — it is edited whole", () => {
+	const counted = engine.census(SHEET);
+	assert.equal(counted.isWindowed, false);
+	assert.equal(counted.formulas, 4);
+});
+
+test("windowRows: one viewport, verbatim, at its true addresses", () => {
+	assert.deepEqual(engine.windowRows(OVER_BUDGET, 10, 2), [
+		["r10", "10"],
+		["r11", "11"],
+	]);
+});
+
+test("windowComputed: one viewport evaluated under the browser's budgets", () => {
+	const grid = engine.windowComputed(OVER_BUDGET, 59998, 2);
+	assert.deepEqual(grid, [
+		["r59998", "59998"],
+		["r59999", "59999"],
+	]);
+});
+
+test("windows: asking a within-budget document for one is an error, not an empty answer", () => {
+	assert.throws(() => engine.windowRows(SHEET, 0, 1), /within the budget/);
+});
+
 // -- engine: compute --------------------------------------------------------
 
 test("compute: literals and formulas resolve in place", () => {
