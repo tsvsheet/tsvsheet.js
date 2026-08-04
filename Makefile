@@ -6,12 +6,12 @@
 # gate). The engine itself is NOT reimplemented here: it is the Go engine
 # compiled to WebAssembly and embedded, re-downloaded by the `wasm` target.
 
-TSVSHEET_WASM_VERSION := v0.27.2
+TSVSHEET_WASM_VERSION := v0.27.8
 # Out-of-band integrity: the expected sha256 of each pinned release asset
 # (`gh release view $(TSVSHEET_WASM_VERSION) --repo tsvsheet/go-tsvsheet --json
 # assets`). `make wasm` verifies the download against these, so a moved tag or a
 # tampered asset fails the build. Update both when bumping the version.
-TSVSHEET_WASM_SHA256 := 00f109a6c78e8c931ddc730a965b508bfb049eea9cd1ec804ce8632a0d5cb6f5
+TSVSHEET_WASM_SHA256 := 57db22db296dc28f4b51cb3384021b1a017d9ba09c3ef93d7c04c6cfc83b06b1
 TSVSHEET_WASM_EXEC_SHA256 := 5b642017724b7bef23b4f6606e28e5ed9788fdd0cdfafc06f3f216292715526b
 
 .PHONY: help check ci lint test wasm playground
