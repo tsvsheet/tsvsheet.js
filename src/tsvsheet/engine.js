@@ -22,6 +22,33 @@ export class Engine {
 		return this.#call("compute", source);
 	}
 
+	/**
+	 * Report `source`'s totals from one scan, materializing nothing: rows,
+	 * cols, cells, formulas, the effective resident budget, and whether this
+	 * document is past it. The pre-flight a frontend runs to choose between
+	 * editing and paging — the same census, and the same ceiling, the terminal
+	 * pager consults (spec 021).
+	 */
+	census(source) {
+		return this.#call("census", source);
+	}
+
+	/**
+	 * The source texts of one viewport, `n` rows from `from`, clipped to the
+	 * grid: literals and formulas as written, nothing computed.
+	 */
+	windowRows(source, from, n) {
+		return this.#call("windowRows", source, from, n);
+	}
+
+	/**
+	 * One viewport evaluated — the window's own formulas computed and their
+	 * dependencies read lazily, under the browser's budgets.
+	 */
+	windowComputed(source, from, n) {
+		return this.#call("windowComputed", source, from, n);
+	}
+
 	/** Replace the cell at (row, col) with `text` and recompute. */
 	setCell(source, row, col, text) {
 		return this.#call("setCell", source, row, col, text);

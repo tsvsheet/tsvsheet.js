@@ -31,6 +31,20 @@ export interface Span {
 	to: Address;
 }
 
+/**
+ * A document's totals, and the budget that decides how it opens. A document
+ * whose `cells` exceed `budget` is view/compute-only and pages — the same
+ * ruling, and the same ceiling, in every frontend (spec 021).
+ */
+export interface Census {
+	rows: number;
+	cols: number;
+	cells: number;
+	formulas: number;
+	budget: number;
+	isWindowed: boolean;
+}
+
 /** One static diagnostic reported by `compute`. */
 /**
  * One declaration's rows and columns, as sorted 1-based positions — the
@@ -102,6 +116,15 @@ export interface References {
  */
 export class Engine {
 	compute(source: string): View;
+	/**
+	 * A source's totals from one scan, materializing nothing — the pre-flight
+	 * that decides whether a document is edited whole or paged (spec 021).
+	 */
+	census(source: string): Census;
+	/** One viewport's source texts, clipped to the grid; nothing computed. */
+	windowRows(source: string, from: number, n: number): Grid;
+	/** One viewport evaluated under the browser's budgets. */
+	windowComputed(source: string, from: number, n: number): Grid;
 	setCell(source: string, row: number, col: number, text: string): View;
 	insertRow(source: string, row: number, col: number): View;
 	deleteRow(source: string, row: number, col: number): View;
