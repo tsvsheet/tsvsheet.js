@@ -97,7 +97,6 @@ test("compute: named values resolve through the wasm boundary (023)", () => {
 	assert.deepEqual(view.computed[0], ["0.08", "8"]);
 });
 
-
 test("compute: literals and formulas resolve in place", () => {
 	const view = engine.compute(SHEET);
 	assert.deepEqual(view.computed[0], ["1", "2", "3"]);
