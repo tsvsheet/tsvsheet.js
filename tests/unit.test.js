@@ -92,6 +92,12 @@ test("windows: asking a within-budget document for one is an error, not an empty
 
 // -- engine: compute --------------------------------------------------------
 
+test("compute: named values resolve through the wasm boundary (023)", () => {
+	const view = engine.compute("=0.08 |@ named(Rate)\t=@Rate * 100\n");
+	assert.deepEqual(view.computed[0], ["0.08", "8"]);
+});
+
+
 test("compute: literals and formulas resolve in place", () => {
 	const view = engine.compute(SHEET);
 	assert.deepEqual(view.computed[0], ["1", "2", "3"]);
